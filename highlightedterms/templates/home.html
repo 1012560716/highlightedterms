@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>高亮词标注</title>
+    {% load staticfiles %}
+    <script src="{% static "js/jquery-1.9.1.min.js" %}" type="text/javascript"></script>
+	<script type="text/javascript">
+			$(document).ready(function(){
+
+			});
+            {#验证 废弃不用#}
+			function verify(){
+			    var prople_name = $("#prople_name").val();
+			    var text = $("#text").val()
+                var toponymy = $("#toponymy").val()
+                var institutional_framework = $("#institutional_framework").val()
+                var data = {"prople_name":prople_name,"text":text,"toponymy":toponymy,
+                    "institutional_framework":institutional_framework}
+                $.getJSON("/ajax_verify/",data,function(data){
+                    $("#re_text").html(data.re_text);
+                    $("#number").val(data.number);
+                })
+            }
+            {#技术 废弃不用#}
+            function count(){
+                var number = $("#number").val();
+                var error_word = $("#error_word").val();
+                var missing_word = $("#missing_word").val();
+                data = {"number":number,"error_word":error_word,"missing_word":missing_word,}
+                $.getJSON(/ajax_count/,data,function(data){
+
+                })
+            }
+            {#查询#}
+            function news_select(){
+                var newsid = $("#newsid").val();
+                $.getJSON("/ajax_select/",{"newsid":newsid},function(news){
+                    $("#people").html(news.people);
+                    $("#toponymy").html(news.toponymy);
+                    $("#organization").html(news.organization);
+                    $("#title").html(news.title);
+                    $("#content").html(news.centent);
+
+                    $("#people_num").val(news.people_num);
+                    $("#toponymy_num").val(news.toponymy_num);
+                    $("#organization_num").val(news.organization_num);
+
+                    $("#people_error").val(news.people_error);
+                    $("#toponymy_error").val(news.toponymy_error);
+                    $("#organization_error").val(news.organization_error);
+
+                    $("#people_miss").val(news.people_miss);
+                    $("#toponymy_miss").val(news.toponymy_miss);
+                    $("#organization_miss").val(news.organization_miss);
+                })
+
+            }
+            {#下一篇#}
+            function news_next(){
+                var newsid = $("#newsid").val();
+                parseInt
+                $("#newsid").val(parseInt(newsid)+1);
+                news_select();
+            }
+            {#上一篇#}
+            function news_last(){
+                var newsid = $("#newsid").val();
+                newsid = parseInt(newsid);
+                if(newsid>1){
+                    $("#newsid").val(parseInt(newsid)-1);
+                }
+                news_select();
+            }
+            function news_save(){
+                var newsid = $("#newsid").val();
+                var people_num = $("#people_num").val();
+                var toponymy_num = $("#toponymy_num").val();
+                var organization_num = $("#organization_num").val();
+
+                var people_error = $("#people_error").val();
+                var toponymy_error = $("#toponymy_error").val();
+                var organization_error = $("#organization_error").val();
+
+                var people_miss = $("#people_miss").val();
+                var toponymy_miss = $("#toponymy_miss").val();
+                var organization_miss = $("#organization_miss").val();
+                data={"newsid":newsid,"people_num":people_num,"toponymy_num":toponymy_num,
+                    "organization_num":organization_num,
+                    "people_error":people_error,"toponymy_error":toponymy_error,
+                    "organization_error":organization_error, "people_miss":people_miss,
+                    "toponymy_miss":toponymy_miss,"organization_miss":organization_miss}
+                $.get("/ajax_save/",data,function(data){
+                    alert(data.msg);
+                })
+
+
+            }
+
+    </script>
+    <style type="text/css">
+        .shows{
+            float:right;
+            width:600px;
+            height:400px;
+{#            border:1px solid#}
+        }
+        .inputstyle{
+            background-color: red;
+            width:100px;
+            height:40px;
+
+        }
+
+    </style>
+</head>
+<body>
+    <form method = 'post'>
+        <table width="90%" align="center">
+            <tr>
+                <td colspan="4">
+                    id：<input id="newsid" type="text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="button" id = "select" value="查询" onclick="news_select();">&nbsp;&nbsp;&nbsp;
+                    <input type="button" id = "last" value="上一篇" onclick = "news_last();">&nbsp;&nbsp;&nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td width="80px">人&nbsp;&nbsp;名：</td>
+                <td width="600px"><span id="people" style="background:red"></span>
+                    <input type="hidden" id="people_num">
+                </td>
+                <td>错误词：<input id="people_error" type="text"></td>
+                <td>漏掉词：<input id="people_miss" type="text"></td>
+            </tr>
+            <tr>
+                <td  width="80px">内容地域：</td>
+                <td><span id="toponymy" style="background:#3399FF"></span>
+                    <input type="hidden" id="toponymy_num">
+                </td>
+                <td>错误词：<input id="toponymy_error" type="text"></td>
+                <td>漏掉词：<input id="toponymy_miss" type="text"></td>
+            </tr>
+            <tr>
+                <td  width="80px">泛主题地域：</td>
+                <td><span id="organization" style="background:yellow"></span>
+                    <input type="hidden" id="organization_num">
+                </td>
+                <td>错误词：<input id="organization_error" type="text"></td>
+                <td>漏掉词：<input id="organization_miss" type="text"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td colspan="2" align="center">
+                    <input class="inputstyle"  type="button"  value="提交" onclick="news_save();">&nbsp;&nbsp;
+                    <input type="button" id = "next" value="下一篇" onclick = "news_next();">
+                </td>
+            </tr>
+        </table>
+        <table width="90%" align="center">
+            <tr>
+                <td>
+                    <H4 id="title" style="text-align: center">{{ news.title }}</H4>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div  name="content" id="content"></div>
+                </td>
+            </tr>
+        </table>
+
+    </form>
+</body>
+</html>

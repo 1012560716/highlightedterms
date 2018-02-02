@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>高亮词标注</title>
+    {% static "js/jquery-1.9.1.min.js" %}
+    <script src="{% static "js/jquery-1.9.1.min.js" %}" type="text/javascript"></script>
+	<script type="text/javascript">
+			$(document).ready(function(){
+                alert("123");
+			});
+			function verify(){
+			    var prople_name = $("#prople_name").val();
+			    var text = $("#text").val()
+                var toponymy = $("#toponymy").val()
+                var institutional_framework = $("#institutional_framework").val()
+                var data = {"prople_name":prople_name,"text":text,"toponymy":toponymy,
+                    "institutional_framework":institutional_framework}
+                $.getJSON("/ajax_verify/",data,function(data){
+                    $("#re_text").html(data.re_text);
+                    $("#number").val(data.number);
+                })
+            }
+            function count(){
+                var number = $("#number").val();
+                var error_word = $("#error_word").val();
+                var missing_word = $("#missing_word").val();
+                data = {"number":number,"error_word":error_word,"missing_word":missing_word,}
+                $.getJSON(/ajax_count/,data,function(data){
+
+                })
+            }
+    </script>
+    <style type="text/css">
+        .shows{
+            float:right;
+            width:600px;
+            height:400px;
+{#            border:1px solid#}
+        }
+    </style>
+</head>
+<body>
+    <form method = 'post'>
+        人&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：
+        <input type="text" name = 'prople_name' id = "prople_name"/> <span style="background:red">red</span><br>
+
+        内容地域：
+        <input type="text" name = 'toponymy' id = "toponymy"/> <span style="background:#3390FF">blue</span><br>
+
+        泛主题地域：
+        <input type="text" name = 'institutional_framework' id = "institutional_framework"/> <span style="background:yellow">yellow</span><br>
+
+        <H4>正文</H4>
+        <textarea name="text" id="text" style="width:600px; height:350px;" ></textarea>
+        <div  name="re_text" id="re_text">{{ news.content}}</div><br>
+        <input type="button" id="button" onclick="verify();" value="提交">
+        <br><br>
+        <input type="hidden" id="number">
+{#        错误词：<input type="text" name = 'error_word' id = "error_word"/><br>#}
+{#        漏掉词：<input type="text" name = 'missing_word' id = "missing_word"/><br>#}
+{#        <input type="button" id="count" onclick="count();" value="计算">#}
+    </form>
+</body>
+</html>
